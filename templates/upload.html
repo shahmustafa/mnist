@@ -11,7 +11,7 @@ h2 {text-align: center;}
 </head>
 <body>
  <h1 style='color:blue'>Classification API</h1>
- <h2>Upload handwriten image</h2>
+ <h2>Upload handwriten digit image</h2>
  <form method ='post' enctype=multipart/form-data>
   <input type="file" name="image" onchange="loadFile(event)">
   <input type="submit" value="upload">
@@ -22,6 +22,7 @@ h2 {text-align: center;}
           image.src=URL.createObjectURL(event.target.files[0]);
       };
   </script>
+ </form>
 </body>
 </html>
 
