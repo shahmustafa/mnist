@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import cv2
 import numpy as np
 import tensorflow as tf
@@ -8,7 +8,7 @@ import gc
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
     try:
-        tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2000)])
+        tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2000)]) # 2000MB=2GB
     except RuntimeError as e:
         print(e)
 app = Flask(__name__)
@@ -32,20 +32,25 @@ def preprocess_image(image, input_size = (28, 28)):
     # input_tensor = normalized_img
     return input_tensor
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['GET','POST'])
 def predict():
+    if request.method == 'GET':
+        return render_template('upload.html')
     # ensure an image was properly uploaded to our endpoint
     if not request.files.get("image"):
         return jsonify({'message' : "Image not recevied!"}), 403
-    image_file = request.files['image']
-    image_data = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
-    print(image_data.shape)
-    print(type(image_data))
+    if request.method =='POST':
+
+        image_file = request.files['image']
+        image_data = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
+        print(image_data.shape)
+        print(type(image_data))
 
 
-    image = preprocess_image(image_data, input_shape)
-    cl = model.predict(image)
-    return class_names[np.argmax(cl)]
+        image = preprocess_image(image_data, input_shape)
+        cls = model.predict(image)
+        cls = class_names[np.argmax(cls)]
+        return render_template('class.html', cls=cls)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+h1 {text-align: center;}
+h2 {text-align: center;}
+</style>
+</head>
+<head>
+ <title>Classification API</title>
+</head>
+<body>
+ <h1 style='color:blue'>Classification API</h1>
+ <h2>Upload handwriten image</h2>
+ <form method ='post' enctype=multipart/form-data>
+  <input type="file" name="image" onchange="loadFile(event)">
+  <input type="submit" value="upload">
+     <img id="output" width="400" height="300"/>
+       <script>
+      var loadFile = function(event) {
+          var image = document.getElementById('output');
+          image.src=URL.createObjectURL(event.target.files[0]);
+      };
+  </script>
+</body>
+</html>
+
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!-- <title>Classification App</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--  <input type="file" accept="image/*" onchange="loadFile(event)">-->
+<!--  <p><img id="output" width="800"/></p>-->
+<!--  <script>-->
+<!--      var loadFile = function(event) {-->
+<!--          var image = document.getElementById('output');-->
+<!--          image.src=URL.createObjectURL(event.target.files[0]);-->
+<!--      };-->
+<!--  </script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--  <head>-->
+<!--    <title>image upload and display</title>-->
+<!--  </head>-->
+<!--  <body>-->
+<!--      <input type="file" accept="image/*" onchange="loadFile(event)">-->
+<!--      <p><img id="output" width="800"/></p>-->
+<!--      <script>-->
+<!--          var loadFile = function(event) {-->
+<!--              var image = document.getElementById('output');-->
+<!--              image.src=URL.createObjectURL(event.target.files[0]);-->
+<!--          };-->
+<!--      </script>-->
+<!--  </body>-->
+<!--</html>-->
