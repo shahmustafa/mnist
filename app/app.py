@@ -4,9 +4,10 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from flask_basicauth import BasicAuth
-import base64
-import psycopg2
-import gc
+# import base64
+# import psycopg2
+import mysql.connector
+# import gc
 
 # GPU Utilization
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -28,13 +29,13 @@ model = keras.models.load_model('mnist_nn.h5')
 
 def write_to_employee_data(image: bytearray, prediction: str):
     config = {
-        'user': 'postgres',
-        'password': 'Bigv@567',
-        'host': 'localhost',
-        'port': '5432',
-        'database': 'HR'
+        'user': 'root',
+        'password': 'root',
+        'host': 'db',
+        'port': '3306',
+        'database': 'digit'
     }
-    connection = psycopg2.connect(**config)
+    connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
     query = "INSERT INTO classification_data (image, prediction) VALUES (%s, %s)"
     values = (image, prediction)
