@@ -14,7 +14,7 @@ gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
     try:
         tf.config.experimental.set_virtual_device_configuration(gpus[0], [
-            tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2000)])  # 2000MB=2GB
+            tf.config.experimental.VirtualDeviceConfiguration(memory_limit=1000)])  # 2000MB=2GB
     except RuntimeError as e:
         print(e)
 app = Flask(__name__)
@@ -86,4 +86,4 @@ def predict():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=False)
