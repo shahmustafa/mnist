@@ -2,6 +2,5 @@ Flask==3.0.0
 Flask_BasicAuth==0.2.0
 opencv-python
 numpy
-opencv_python==4.8.1.78
 tensorflow==2.11.0
 mysql-connector-python
