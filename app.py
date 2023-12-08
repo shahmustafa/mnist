@@ -1,8 +1,11 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, make_response
 import cv2
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+import jwt
+import datetime
+from functools import wraps
 import gc
 # GPU Utilization
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -12,9 +15,50 @@ if gpus:
     except RuntimeError as e:
         print(e)
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'thisissecretkey'
 class_names = ["0","1","2","3","4","5","6","7","8","9"]
 input_shape = (28,28)
 model = keras.models.load_model('mnist_nn.h5')
+
+# def token_required(f):
+#     @wraps(f)
+#     def decorated(*args, **kwargs):
+#         auth = request.authorization
+#
+#         # token = flask.request.args.get('token') # http://127.0.0.1:5000/route?token=s1234fr5tg-gyt
+#
+#         if not auth or not auth.token:
+#             return jsonify({'message' : 'Token is missing!'}), 401
+#
+#         token = auth.token
+#
+#         try:
+#             data = jwt.decode(jwt=token, key=app.config['SECRET_KEY'], algorithms=["HS256"])
+#         except jwt.ExpiredSignatureError:
+#             return jsonify({'message' : 'Token has expired!'}), 401
+#         except jwt.InvalidTokenError:
+#             return jsonify({'message' : 'Token is invalid!'}), 401
+#
+#         return f(*args, **kwargs)
+#     return decorated
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.args.get('token') # http://127.0.0.1:5000/route?token=s1234fr5tg-gyt
+
+        if not token:
+            return jsonify({'message' : 'Token is missing!'}), 403
+
+        try:
+            data = jwt.decode(jwt=token, key=app.config['SECRET_KEY'], algorithms=["HS256"])
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message' : 'Token has expired!'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message' : 'Token is invalid!'}), 403
+
+        return f(*args, **kwargs)
+    return decorated
 
 def preprocess_image(image, input_size = (28, 28)):
     # Convert the image to grayscale
@@ -33,6 +77,7 @@ def preprocess_image(image, input_size = (28, 28)):
     return input_tensor
 
 @app.route('/predict', methods=['GET','POST'])
+@token_required
 def predict():
     if request.method == 'GET':
         return render_template('upload.html')
@@ -51,6 +96,15 @@ def predict():
         cls = model.predict(image)
         cls = class_names[np.argmax(cls)]
         return render_template('class.html', cls=cls)
+
+@app.route('/login')
+def login():
+    auth = request.authorization
+    if auth and auth.password == 'password':
+        token = jwt.encode({'user' : auth.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=2)},app.config['SECRET_KEY'])
+        return jsonify({'token' : token})
+
+    return make_response('Could not verify!', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
