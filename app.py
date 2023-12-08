@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+from flask_basicauth import BasicAuth
 import gc
 # GPU Utilization
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -12,6 +13,10 @@ if gpus:
     except RuntimeError as e:
         print(e)
 app = Flask(__name__)
+app.config["BASIC_AUTH_USERNAME"] = "dam"
+app.config["BASIC_AUTH_PASSWORD"] = "damp"
+
+basic_auth = BasicAuth(app)
 class_names = ["0","1","2","3","4","5","6","7","8","9"]
 input_shape = (28,28)
 model = keras.models.load_model('mnist_nn.h5')
@@ -33,6 +38,7 @@ def preprocess_image(image, input_size = (28, 28)):
     return input_tensor
 
 @app.route('/predict', methods=['GET','POST'])
+@basic_auth.required
 def predict():
     if request.method == 'GET':
         return render_template('upload.html')
