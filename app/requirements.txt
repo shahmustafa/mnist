@@ -1,6 +1,7 @@
 Flask==3.0.0
-Flask_BasicAuth==0.2.0
-opencv-python
+Flask-BasicAuth==0.2.0
+pillow
 numpy
 tensorflow==2.11.0
+protobuf==3.19.4
 mysql-connector-python
