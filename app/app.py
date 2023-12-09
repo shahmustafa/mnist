@@ -1,22 +1,23 @@
 from flask import Flask, request, jsonify, render_template
-import cv2
+from PIL import Image, ImageFilter
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
 from tensorflow import keras
 from flask_basicauth import BasicAuth
 # import base64
 # import psycopg2
 import mysql.connector
 # import gc
+import io
 
 # GPU Utilization
-gpus = tf.config.experimental.list_physical_devices('GPU')
-if gpus:
-    try:
-        tf.config.experimental.set_virtual_device_configuration(gpus[0], [
-            tf.config.experimental.VirtualDeviceConfiguration(memory_limit=1000)])  # 2000MB=2GB
-    except RuntimeError as e:
-        print(e)
+# gpus = tf.config.experimental.list_physical_devices('GPU')
+# if gpus:
+#     try:
+#         tf.config.experimental.set_virtual_device_configuration(gpus[0], [
+#             tf.config.experimental.VirtualDeviceConfiguration(memory_limit=1000)])  # 2000MB=2GB
+#     except RuntimeError as e:
+#         print(e)
 app = Flask(__name__)
 app.config["BASIC_AUTH_USERNAME"] = "dam"
 app.config["BASIC_AUTH_PASSWORD"] = "damp"
@@ -44,20 +45,30 @@ def write_to_employee_data(image: bytearray, prediction: str):
     cursor.close()
     connection.close()
 
+
 def preprocess_image(image, input_size=(28, 28)):
-    # Convert the image to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # Apply Gaussian Blur
-    blurred = cv2.GaussianBlur(gray, (21, 21), 0)
-    # Thresholding
-    thresh = cv2.threshold(blurred, 110, 255, cv2.THRESH_BINARY_INV)[1]
+
     # Resize to the input size expected by your model
-    resized_img = cv2.resize(thresh, input_size, interpolation=cv2.INTER_AREA)
-    # Normalize pixel values to be in the range [0, 1]
-    normalized_img = resized_img / 255.0
+    resized_img = image.resize(input_size, Image.LANCZOS)
+
+    # Convert the image to grayscale
+    gray = resized_img.convert("L")
+
+    # Apply Gaussian Blur (not directly available in Pillow, we can use filter)
+    blurred = gray.filter(ImageFilter.GaussianBlur(radius=10))
+
+    # Thresholding (simple thresholding, you may need to adjust)
+    threshold = 110
+    binary_image = blurred.point(lambda p: p > threshold and 255)
+
+
+
+    # Convert to NumPy array and normalize pixel values to be in the range [0, 1]
+    normalized_img = np.array(binary_image) / 255.0
+
     # Add batch dimension
     input_tensor = np.expand_dims(normalized_img, axis=0)
-    # input_tensor = normalized_img
+
     return input_tensor
 
 
@@ -70,20 +81,24 @@ def predict():
     if not request.files.get("image"):
         return jsonify({'message': "Image not received!"}), 403
     if request.method == 'POST':
-        image_file = request.files['image'].read()
-        # Convert binary data to bytearray
-        byte_array = bytearray(image_file)
-        image_data = cv2.imdecode(np.frombuffer(image_file, np.uint8), cv2.IMREAD_UNCHANGED)
+
+        file = request.files['image']
+        # Read the binary image data
+        file_bin = file.read()
+        image = Image.open(io.BytesIO(file_bin))
+
+        # Convert binary data to bytearray # to store in DB
+        byte_array = bytearray(file_bin)
 
         # print(image_data.shape)
         # print(type(image_data))
 
-        image = preprocess_image(image_data, input_shape)
+        image = preprocess_image(image, input_shape)
         cls = model.predict(image)
         cls = class_names[np.argmax(cls)]
-        write_to_employee_data(byte_array,cls)
+        # write_to_employee_data(byte_array,cls)
         return render_template('class.html', cls=cls)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=False)
+    app.run(host='0.0.0.0', debug=False, port=5000)
