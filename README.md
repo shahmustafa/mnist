@@ -13,10 +13,10 @@
 - Click upload to classifiy the image
 - Classification result will be displayed
 ![Screenshot from 2023-12-10 22-45-10.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-10%2022-45-10.png)
-  - Requested image and prediction result will be stored in MySQL databse\
-  `-------id-----------------------image------------------------prediction`\
-  `--------1----------------(Image binary formate)-----------------7------`\
-  `--------2----------------(Image binary formate)-----------------3------`\
+- Requested image and prediction result will be stored in MySQL databse\
+`-------id-----------------------image------------------------prediction`\
+`--------1----------------(Image binary formate)-----------------7------`\
+`--------2----------------(Image binary formate)-----------------3------`\
 - MySQL Server credentials to the acces the database from host machine
   - `user: root`
   - `password: root`
