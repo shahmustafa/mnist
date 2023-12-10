@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from PIL import Image, ImageFilter
+# import cv2
 import numpy as np
 # import tensorflow as tf
 from tensorflow import keras
@@ -9,7 +10,9 @@ from flask_basicauth import BasicAuth
 import mysql.connector
 # import gc
 import io
+import os
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 # GPU Utilization
 # gpus = tf.config.experimental.list_physical_devices('GPU')
 # if gpus:
@@ -48,23 +51,14 @@ def write_to_employee_data(image: bytearray, prediction: str):
 
 def preprocess_image(image, input_size=(28, 28)):
 
-    # Resize to the input size expected by your model
-    resized_img = image.resize(input_size, Image.LANCZOS)
-
     # Convert the image to grayscale
-    gray = resized_img.convert("L")
+    gray = image.convert("L")
 
-    # Apply Gaussian Blur (not directly available in Pillow, we can use filter)
-    blurred = gray.filter(ImageFilter.GaussianBlur(radius=10))
-
-    # Thresholding (simple thresholding, you may need to adjust)
-    threshold = 110
-    binary_image = blurred.point(lambda p: p > threshold and 255)
-
-
+    # Resize to the input size expected by your model
+    resized_img = gray.resize(input_size, Image.LANCZOS)
 
     # Convert to NumPy array and normalize pixel values to be in the range [0, 1]
-    normalized_img = np.array(binary_image) / 255.0
+    normalized_img = np.array(resized_img) / 255.0
 
     # Add batch dimension
     input_tensor = np.expand_dims(normalized_img, axis=0)
@@ -96,7 +90,7 @@ def predict():
         image = preprocess_image(image, input_shape)
         cls = model.predict(image)
         cls = class_names[np.argmax(cls)]
-        # write_to_employee_data(byte_array,cls)
+        write_to_employee_data(byte_array,cls)
         return render_template('class.html', cls=cls)
 
 

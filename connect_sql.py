@@ -18,12 +18,13 @@
 # for row in rows:
 #     print(row)
 
-import mysql
+import mysql.connector
+import base64
 
 config = {
     'user': 'root',
     'password': 'root',
-    'host': '127.0.0.1',
+    'host': 'localhost',
     'port': '3200',
     'database': 'digit'
 }
@@ -36,5 +37,10 @@ connection.commit()
 cursor.close()
 connection.close()
 
+
 for row in rows:
-    print(row)
+    base64_string = base64.b64encode(row[1]).decode('utf-8')
+    print("{:<5} {:<10} {:<5}".format(row[0], base64_string[0], row[2]))
+
+
+
