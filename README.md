@@ -17,7 +17,7 @@
 `-------id-----------------------image------------------------prediction`\
 `--------1----------------(Image binary formate)-----------------7------`\
 `--------2----------------(Image binary formate)-----------------3------`\
-- MySQL Server credentials to the acces the database from host machine. [/Misc.](./Misc.)
+- MySQL Server credentials to the acces the database from host machine. [/misc.](./misc.)
   - `user: root`
   - `password: root`
   - `host: db`
