@@ -9,7 +9,7 @@
   - `username: dam`
   - `passowrd: damp`
 - Basic html page opens to browse(test images are in [./test_data](./test_data)) and upload the image
-![Upload page](https://github.com/shahmustafa/mnist/blob/master/readme_imgs/Screenshot%20from%202023-12-10%2022-30-31.png)
+![Upload page](https://github.com/shahmustafa/mnist/blob/master/readme_imgs/Screenshot%20from%202023-12-11%2000-19-45.png)
 - Click upload to classifiy the image
 - Classification result will be displayed
 ![Result page](https://github.com/shahmustafa/mnist/blob/master/readme_imgs/Screenshot%20from%202023-12-10%2022-45-10.png)
