@@ -16,5 +16,34 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d
+
+#version: "2"
+#services:
+#  app:
+#    image: shahmustafa/mnist-app:latest
+#    links:
+#      - db
+#    ports:
+#      - "5000:5000"
+#    depends_on:
+#      - db
+#
+#  db:
+#    image: shahmustafa/mysql:latest
+#    ports:
+#      - "3200:3306"
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: digit
+#    volumes:
+#      - ./db:/docker-entrypoint-initdb.d
+##      - ./data:/var/lib/mysql
+#    networks:
+#      - default
+#
+#networks:
+#  default:
+#    external:
+#      name: mnist_default
+

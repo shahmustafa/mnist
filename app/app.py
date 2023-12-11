@@ -1,14 +1,10 @@
 from flask import Flask, request, jsonify, render_template
-from PIL import Image, ImageFilter
-# import cv2
+from PIL import Image
 import numpy as np
 # import tensorflow as tf
 from tensorflow import keras
 from flask_basicauth import BasicAuth
-# import base64
-# import psycopg2
 import mysql.connector
-# import gc
 import io
 import os
 
@@ -41,7 +37,7 @@ def write_to_employee_data(image: bytearray, prediction: str):
     }
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
-    query = "INSERT INTO classification_data (image, prediction) VALUES (%s, %s)"
+    query = "INSERT INTO classification (image, prediction) VALUES (%s, %s)"
     values = (image, prediction)
     cursor.execute(query, values)
     connection.commit()

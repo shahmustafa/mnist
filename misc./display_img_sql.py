@@ -15,7 +15,7 @@ connection = mysql.connector.connect(
 
 # Replace 'your_table' and 'your_image_id' with your actual table and image ID
 table_name = 'classification_data'
-image_id = 1
+image_id = 2
 
 # Query to retrieve image data
 query = f"SELECT image FROM {table_name} WHERE id = %s;"
@@ -38,11 +38,8 @@ if result:
     image = cv2.imdecode(np.frombuffer(bytes_io.read(), np.uint8), cv2.IMREAD_COLOR)
 
     # Display the image using OpenCV
-    cv2.imshow('Image from PostgreSQL', image)
+    cv2.imshow('Image from MySQL', image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 else:
     print(f"No image found for ID {image_id}")
-
-# Close the database connection
-connection.close()

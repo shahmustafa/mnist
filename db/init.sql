@@ -29,9 +29,11 @@ CREATE DATABASE IF NOT EXISTS digit;
 USE digit;
 
 -- Create a new table
-CREATE TABLE classification_data (
+CREATE TABLE classification (
     id INT AUTO_INCREMENT PRIMARY KEY,
     image LONGBLOB,
     prediction VARCHAR(1)
 );
+
+
 
